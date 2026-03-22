@@ -1,0 +1,9 @@
+touch .gitignore
+```
+
+Open `.gitignore` and add this:
+```
+__pycache__/
+*.pyc
+.env
+.DS_Store
