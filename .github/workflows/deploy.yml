@@ -1,0 +1,42 @@
+name: Deploy Health Monitor
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          cd app
+          pip install -r requirements.txt
+
+      - name: Test health endpoint
+        run: |
+          cd app
+          python3 app.py &
+          sleep 3
+          curl http://localhost:5000/health
+          kill %1
+
+      - name: Build Docker image
+        run: |
+          cd app
+          docker build -t health-monitor .
+
+      - name: Confirm build success
+        run: |
+          echo "✅ Docker image built successfully"
+          docker images | grep health-monitor
